@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guestbook</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            text-align: center;
+        }
+        textarea {
+            width: 80%;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: blue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: #f4f4f4;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+    <script type="module">
+        import { backend } from "declarations/backend";
+const  guestbook = backend;
+        async function fetchMessages() {
+            const messages = await guestbook.getMessages();
+            const list = document.getElementById("messages");
+            list.innerHTML = ""; // Clear list
+
+            messages.forEach(msg => {
+                const li = document.createElement("li");
+                li.textContent = msg;
+                list.appendChild(li);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", fetchMessages);
+
+        document.getElementById("submit").addEventListener("click", async () => {
+            const input = document.getElementById("message");
+            const message = input.value.trim();
+
+            if (message) {
+                await guestbook.addMessage(message);
+                input.value = "";
+                fetchMessages(); // Refresh messages
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>Guestbook</h1>
+    <textarea id="message" placeholder="Write a message..."></textarea><br>
+    <button id="submit">Add Message</button>
+    <h2>Messages</h2>
+    <ul id="messages"></ul>
+</body>
+</html>
